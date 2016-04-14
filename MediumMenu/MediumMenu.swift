@@ -41,6 +41,7 @@ public class MediumMenu: UIView {
     public var textColor: UIColor?
     public var highlightTextColor: UIColor?
     public var menuBackgroundColor: UIColor?
+    public var menuBackgroundImage: UIImage?
     public var titleFont: UIFont?
     public var bounceOffset: CGFloat = 0
     public var velocityTreshold: CGFloat = 0
@@ -73,6 +74,7 @@ public class MediumMenu: UIView {
         self.textColor           = Color.mediumWhiteColor
         self.highlightTextColor  = Color.mediumGlayColor
         self.menuBackgroundColor = Color.mediumBlackColor
+        self.menuBackgroundImage = nil
         self.bounceOffset        = 0
         self.velocityTreshold    = 1000
         self.panGestureEnable    = true
@@ -83,8 +85,14 @@ public class MediumMenu: UIView {
         super.init(coder: aDecoder)
     }
     
-    public init(items: [MediumMenuItem], forViewController: UIViewController) {
+    public init(items: [MediumMenuItem], menuBackgroundImage: UIImage, forViewController: UIViewController) {
         self.init()
+        
+        self.menuBackgroundImage = menuBackgroundImage
+        let imageView: UIImageView = UIImageView(image: menuBackgroundImage)
+        imageView.frame = CGRectMake(0, 0, CGRectGetWidth(UIScreen.mainScreen().bounds), CGRectGetHeight(UIScreen.mainScreen().bounds))
+        addSubview(imageView)
+        
         self.items = items
         height = CGRectGetHeight(UIScreen.mainScreen().bounds)-80 // auto-calculate initial height based on screen size
         frame = CGRectMake(0, 0, CGRectGetWidth(UIScreen.mainScreen().bounds), height)
@@ -94,7 +102,8 @@ public class MediumMenu: UIView {
         menuContentTableView?.dataSource = self
         menuContentTableView?.showsVerticalScrollIndicator = false
         menuContentTableView?.separatorColor = UIColor.clearColor()
-        menuContentTableView?.backgroundColor = menuBackgroundColor
+        menuContentTableView?.backgroundColor = UIColor.clearColor()
+
         addSubview(menuContentTableView!)
         
         if panGestureEnable {
@@ -298,6 +307,10 @@ extension MediumMenu: UITableViewDataSource, UITableViewDelegate {
         if indexPath.row >= startIndex && indexPath.row <= (items.count - 1 + startIndex) {
             mediumMenuItem = items[indexPath.row - startIndex]
             cell.textLabel?.text = mediumMenuItem?.title
+            if (mediumMenuItem?.icon) != nil {
+                cell.imageView!.image = mediumMenuItem?.icon
+                cell.imageView!.frame = CGRectMake(0,0,28,50)
+            }
         }
         
         return cell
